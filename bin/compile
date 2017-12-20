@@ -12,13 +12,13 @@ if [ ! -f ${ENV_DIR}/APP_BASE ]; then
     echo "APP_BASE was not set. Aborting!" | indent
 fi
 
-if [ ! -f ${ENV_DIR}/APP_DEPS ]; then
-    echo "APP_DEPS was not set. Aborting!" | indent
-fi
+# if [ ! -f ${ENV_DIR}/APP_DEPS ]; then
+#     echo "APP_DEPS was not set. Aborting!" | indent
+# fi
 
-if [ ! -f ${ENV_DIR}/ENGINE_PATH ]; then
-    echo "ENGINE_PATH was not set. Aborting!" | indent
-fi
+# if [ ! -f ${ENV_DIR}/ENGINE_PATH ]; then
+#     echo "ENGINE_PATH was not set. Aborting!" | indent
+# fi
 
 APP_BASE=$(cat ${ENV_DIR}/APP_BASE)       # ex. `customer`
 APP_DEPS=$(cat ${ENV_DIR}/APP_DEPS)       # ex. `api core`
@@ -27,18 +27,19 @@ ENGINE_PATH=$(cat ${ENV_DIR}/ENGINE_PATH) # ex. `./.engines`
 (
     stage=`mktemp -d`                                                                         && # make a temp directory to stage "correct" layout
     mv ${BUILD_DIR}/${APP_BASE} ${stage}                                                      && # stage the app folder we care about
-    for app_dir in ${APP_DEPS}; do mv ${BUILD_DIR}/${app_dir} ${stage}; done                  && # stage the dependency folders we also care about
+    # for app_dir in ${APP_DEPS}; do mv ${BUILD_DIR}/${app_dir} ${stage}; done                  && # stage the dependency folders we also care about
     shopt -s dotglob nullglob                                                                 && # include files that start with . and resolve missing patterns to null
     rm -rf ${BUILD_DIR}/*                                                                     && # clean the target
-    mv ${stage}/${APP_BASE}/* ${BUILD_DIR}/                                                   && # move the application folder's contents into the root
-    rm -rf ${BUILD_DIR}/${ENGINE_PATH}/*                                                      && # remove symlinks to engine dependencies
-    for app_dir in ${APP_DEPS}; do mv ${stage}/${app_dir} ${BUILD_DIR}/${ENGINE_PATH}/; done   ; # move the dependencies into ENGINE_PATH inside BUILD_DIR
+    mv ${stage}/${APP_BASE}/* ${BUILD_DIR}/                                                   #&& # move the application folder's contents into the root
+    # rm -rf ${BUILD_DIR}/${ENGINE_PATH}/*                                                      && # remove symlinks to engine dependencies
+    # for app_dir in ${APP_DEPS}; do mv ${stage}/${app_dir} ${BUILD_DIR}/${ENGINE_PATH}/; done   ; # move the dependencies into ENGINE_PATH inside BUILD_DIR
 )
 
 if ! [ $? ]; then
-    echo "FAILED to stage ${APP_BASE} ${APP_DEPS}" | indent
+    # echo "FAILED to stage ${APP_BASE} ${APP_DEPS}" | indent
+    echo "FAILED to stage ${APP_BASE}" | indent
     exit 1
 fi
 
-echo "Copied ${APP_BASE} ${APP_DEPS} to application root successfully." | indent
-
+# echo "Copied ${APP_BASE} ${APP_DEPS} to application root successfully." | indent
+echo "Copied ${APP_BASE} to application root successfully." | indent
